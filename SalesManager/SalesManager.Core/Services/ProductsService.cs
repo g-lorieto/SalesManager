@@ -1,5 +1,6 @@
 ﻿using SalesManager.Core.Interfaces;
 using SalesManager.Core.Models;
+using SalesManager.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,11 @@ namespace SalesManager.Core.Services
 
         public override bool ValidateEntity(Product entity)
         {
-            return true;
+            var validator = new ProductValidator();
+
+            var result = validator.Validate(entity);
+
+            return result.IsValid;
         }
     }
 }

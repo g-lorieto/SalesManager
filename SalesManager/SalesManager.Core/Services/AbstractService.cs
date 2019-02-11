@@ -18,10 +18,7 @@ namespace SalesManager.Core.Services
 
         public async Task<T> AddAsync(T entity)
         {
-            if (ValidateEntity(entity))
-            {
-                return await _repository.AddAsync(entity);
-            }
+            return await _repository.AddAsync(entity);
         }
 
         public async Task DeleteAsync(int id)

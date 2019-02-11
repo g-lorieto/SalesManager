@@ -54,11 +54,12 @@ namespace SalesManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,CostPerKilo,PricePerKilo,Over10KilosPricePerKilo,FriendsPricePerKilo,Description")] Product product)
         {
-            if (ModelState.IsValid)
+            if (_service.ValidateEntity(product))
             {
                 await _service.AddAsync(product);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(product);
         }
 
@@ -75,6 +76,7 @@ namespace SalesManager.Controllers
             {
                 return NotFound();
             }
+
             return View(product);
         }
 
@@ -90,7 +92,7 @@ namespace SalesManager.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (_service.ValidateEntity(product))
             {
                 try
                 {

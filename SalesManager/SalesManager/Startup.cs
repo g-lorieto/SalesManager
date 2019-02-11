@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SalesManager.Core.Interfaces;
+using SalesManager.Core.Models;
+using SalesManager.Core.Services;
 using SalesManager.DataAccess;
 
 namespace SalesManager
@@ -33,8 +36,11 @@ namespace SalesManager
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddTransient<AbstractService<Product>, ProductsService>();
+            services.AddTransient<IRepository, EfRepository>();
+
 
             services.AddDbContext<SalesManagerContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SalesManagerDatabase")));
         }

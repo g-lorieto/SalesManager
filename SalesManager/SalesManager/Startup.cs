@@ -41,7 +41,6 @@ namespace SalesManager
             services.AddTransient<AbstractService<Product>, ProductsService>();
             services.AddTransient<IRepository, EfRepository>();
 
-
             services.AddDbContext<SalesManagerContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SalesManagerDatabase")));
         }
 
@@ -62,6 +61,12 @@ namespace SalesManager
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<SalesManagerContext>();
+                context.Database.EnsureCreated();
+            }
 
             app.UseMvc(routes =>
             {

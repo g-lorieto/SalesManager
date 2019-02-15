@@ -13,13 +13,13 @@ namespace SalesManager.Core.Services
     {
         public ProductsService(IRepository repository) : base(repository) { }
 
-        public override bool ValidateEntity(Product entity)
+        public override Result ValidateEntity(Product entity)
         {
             var validator = new ProductValidator();
 
             var result = validator.Validate(entity);
 
-            return result.IsValid;
+            return TaskOk(result.IsValid);
         }
     }
 }

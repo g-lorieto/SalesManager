@@ -121,7 +121,7 @@ namespace SalesManager.Controllers
             {
                 return NotFound();
             }
-
+            
             var product = await _service.GetByIdAsync(id.Value);
 
             if (product == null)

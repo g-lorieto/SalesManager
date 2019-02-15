@@ -54,7 +54,7 @@ namespace SalesManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,CostPerKilo,PricePerKilo,Over10KilosPricePerKilo,FriendsPricePerKilo,Description")] Product product)
         {
-            if (_service.ValidateEntity(product))
+            if (_service.ValidateEntity(product).Data)
             {
                 await _service.AddAsync(product);
                 return RedirectToAction(nameof(Index));
@@ -92,7 +92,7 @@ namespace SalesManager.Controllers
                 return NotFound();
             }
 
-            if (_service.ValidateEntity(product))
+            if (_service.ValidateEntity(product).Data)
             {
                 try
                 {
@@ -100,7 +100,8 @@ namespace SalesManager.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _service.EntityExistsAsync(product.Id))
+                    var alreadyExists = await _service.EntityExistsAsync(product.Id);
+                    if (!alreadyExists.Data)
                     {
                         return NotFound();
                     }
@@ -139,11 +140,6 @@ namespace SalesManager.Controllers
         {
             await _service.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<bool> ProductExists(int id)
-        {
-            return await _service.EntityExistsAsync(id);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace SalesManager.Core.Interfaces
     {
         Task<T> GetByIdAsync<T>(int id) where T : BaseEntity;
         Task<List<T>> ListAsync<T>() where T : BaseEntity;
-        Task<T> AddAsync<T>(T entity) where T : BaseEntity;
-        Task UpdateAsync<T>(T entity) where T : BaseEntity;
-        Task DeleteAsync<T>(int id) where T : BaseEntity;
+        Task<int> AddAsync<T>(T entity) where T : BaseEntity;
+        Task<int> UpdateAsync<T>(T entity) where T : BaseEntity;
+        Task<int> DeleteAsync<T>(int id) where T : BaseEntity;
         Task<bool> EntityExistsAsync<T>(int id) where T : BaseEntity;
     }
 }

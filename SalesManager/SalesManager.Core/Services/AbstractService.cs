@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SalesManager.Core.Services
 {
-    public abstract class AbstractService<T> : Result<U> where T : BaseEntity U
+    public abstract class AbstractService<T> where T : BaseEntity
     {
         private IRepository _repository;
 
@@ -17,36 +17,87 @@ namespace SalesManager.Core.Services
             _repository = repository;
         }
 
-        public async Task<Result> AddAsync(T entity)
+        public async Task<Result<int>> AddAsync(T entity)
         {
-            return await _repository.AddAsync(entity);
+            try
+            {
+                return Ok(await _repository.AddAsync(entity));
+            }
+            catch (Exception ex)
+            {
+                return Failure(-1, ex.Message);
+            }
+        }
+        public async Task<Result<int>> DeleteAsync(int id)
+        {
+            try
+            {
+                return Ok(await _repository.DeleteAsync<T>(id));
+            }
+            catch (Exception ex)
+            {
+                return Failure(-1, ex.Message);
+            }
         }
 
-        public async Task<Result> DeleteAsync(int id)
+        public async Task<Result<List<T>>> ListAsync()
         {
-            await _repository.DeleteAsync<T>(id);
+            try
+            {
+                return Ok(await _repository.ListAsync<T>());
+            }
+            catch (Exception ex)
+            {
+                return Failure((List<T>) null, ex.Message);
+            }
         }
 
-        public async Task<List<Result>> ListAsync()
+        public async Task<Result<T>> GetByIdAsync(int id)
         {
-            return await _repository.ListAsync<T>();
+            try
+            {
+                return Ok(await _repository.GetByIdAsync<T>(id));
+            }
+            catch (Exception ex)
+            {
+                return Failure((T) null, ex.Message);
+            }
         }
 
-        public async Task<Result> GetByIdAsync(int id)
+        public async Task<Result<int>> UpdateAsync(int id, T entity)
         {
-            return await _repository.GetByIdAsync<T>(id);
+            try
+            {
+                return Ok(await _repository.UpdateAsync(entity));
+            }
+            catch (Exception ex)
+            {
+                return Failure(-1, ex.Message);
+            }
         }
 
-        public async Task<Result> UpdateAsync(int id, T entity)
+        public async Task<Result<bool>> EntityExistsAsync(int id)
         {
-            await _repository.UpdateAsync(entity);
+            try
+            { 
+                return Ok(await _repository.EntityExistsAsync<T>(id));
+            }
+            catch (Exception ex)
+            {
+                return Failure(false, ex.Message);
+            }
         }
 
-        public async Task<Result> EntityExistsAsync(int id)
+        public abstract Result<bool> ValidateEntity(T entity);
+
+        public Result<U> Ok<U>(U data, string message = "")
         {
-            return await _repository.EntityExistsAsync<T>(id);
+            return new Result<U>(data, true, message);
         }
 
-        public abstract Result ValidateEntity(T entity);
+        public Result<U> Failure<U>(U data, string message = "")
+        {
+            return new Result<U>(data, false, message); 
+        }
     }
 }

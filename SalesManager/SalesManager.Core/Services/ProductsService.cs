@@ -1,5 +1,6 @@
 ﻿using SalesManager.Core.Interfaces;
 using SalesManager.Core.Models;
+using SalesManager.Core.Models.Results;
 using SalesManager.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,13 @@ namespace SalesManager.Core.Services
     {
         public ProductsService(IRepository repository) : base(repository) { }
 
-        public override Result ValidateEntity(Product entity)
+        public override Result<bool> ValidateEntity(Product entity)
         {
             var validator = new ProductValidator();
 
             var result = validator.Validate(entity);
 
-            return TaskOk(result.IsValid);
+            return new Result<bool>(result.IsValid, true);
         }
     }
 }

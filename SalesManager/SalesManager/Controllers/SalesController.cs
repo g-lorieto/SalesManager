@@ -5,25 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SalesManager.Core.Interfaces;
 using SalesManager.Core.Models;
 using SalesManager.Core.Services;
+using SalesManager.DataAccess;
 
 namespace SalesManager.Controllers
 {
-    public class ProductsController : Controller
+    public class SalesController : Controller
     {
-        private AbstractService<Product> _service;
+        private AbstractService<Sale> _service;
 
-        public ProductsController(AbstractService<Product> service) => _service = service;
+        public SalesController(AbstractService<Sale> service) => _service = service;
 
-        // GET: Products
+        // GET: Sales
         public async Task<IActionResult> Index()
         {
             return View((await _service.ListAsync()).Data);
         }
 
-        // GET: Products/Details/5
+        // GET: Sales/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -41,23 +41,23 @@ namespace SalesManager.Controllers
             return View(result.Data);
         }
 
-        // GET: Products/Create
+        // GET: Sales/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Products/Create
+        // POST: Sales/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,CostPerKilo,PricePerKilo,Over10KilosPricePerKilo,FriendsPricePerKilo,Description")] Product product)
+        public async Task<IActionResult> Create([Bind("Date,DeliveryDay,IsPayed,IsDelivered,Comment,Id")] Sale sale)
         {
-            if (_service.ValidateEntity(product).Data)
+            if (_service.ValidateEntity(sale).Data)
             {
-                var result = await _service.AddAsync(product);
-                
+                var result = await _service.AddAsync(sale);
+
                 if (!result.IsSuccess)
                 {
 
@@ -66,10 +66,10 @@ namespace SalesManager.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(product);
+            return View(sale);
         }
 
-        // GET: Products/Edit/5
+        // GET: Sales/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,23 +86,23 @@ namespace SalesManager.Controllers
             return View(result.Data);
         }
 
-        // POST: Products/Edit/5
+        // POST: Sales/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CostPerKilo,PricePerKilo,Over10KilosPricePerKilo,FriendsPricePerKilo,Description")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Date,DeliveryDay,IsPayed,IsDelivered,Comment,Id")] Sale sale)
         {
-            if (id != product.Id)
+            if (id != sale.Id)
             {
                 return NotFound();
             }
 
-            if (_service.ValidateEntity(product).Data)
+            if (_service.ValidateEntity(sale).Data)
             {
                 try
                 {
-                    var result = await _service.UpdateAsync(id, product);
+                    var result = await _service.UpdateAsync(id, sale);
 
                     if (!result.IsSuccess)
                     {
@@ -111,7 +111,7 @@ namespace SalesManager.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    var alreadyExists = await _service.EntityExistsAsync(product.Id);
+                    var alreadyExists = await _service.EntityExistsAsync(sale.Id);
                     if (!alreadyExists.Data)
                     {
                         return NotFound();
@@ -123,17 +123,17 @@ namespace SalesManager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(sale);
         }
 
-        // GET: Products/Delete/5
+        // GET: Sales/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            
+
             var result = await _service.GetByIdAsync(id.Value);
 
             if (result.Data == null)
@@ -144,7 +144,7 @@ namespace SalesManager.Controllers
             return View(result.Data);
         }
 
-        // POST: Products/Delete/5
+        // POST: Sales/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

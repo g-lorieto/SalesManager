@@ -19,8 +19,16 @@ namespace SalesManager.DataAccess
 
         public async Task<int> AddAsync<T>(T entity) where T : BaseEntity
         {
-            _dbContext.Set<T>().Add(entity);
-            return await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Set<T>().Add(entity);
+                return await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public async Task<int> DeleteAsync<T>(int id) where T : BaseEntity

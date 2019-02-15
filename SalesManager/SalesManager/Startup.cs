@@ -38,7 +38,10 @@ namespace SalesManager
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddTransient<AbstractService<Product>, ProductsService>();
+            services.AddTransient<AbstractService<Product>, ProductsService>();            
+            services.AddTransient<AbstractService<Sale>, SalesService>();
+            services.AddTransient<AbstractService<Client>, ClientsService>();
+
             services.AddTransient<IRepository, EfRepository>();
 
             services.AddDbContext<SalesManagerContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SalesManagerDatabase")));

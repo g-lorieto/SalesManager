@@ -1,4 +1,4 @@
-﻿@model SalesManager.Core.Models.Sale
+﻿@model SalesManager.Models.SaleViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,31 +13,31 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
+                <label asp-for="Sale.Date" class="control-label"></label>
+                <input asp-for="Sale.Date" class="form-control" />
+                <span asp-validation-for="Sale.Date" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DeliveryDay" class="control-label"></label>
-                <input asp-for="DeliveryDay" class="form-control" />
-                <span asp-validation-for="DeliveryDay" class="text-danger"></span>
+                <label asp-for="Sale.DeliveryDay" class="control-label"></label>
+                <input asp-for="Sale.DeliveryDay" class="form-control" />
+                <span asp-validation-for="Sale.DeliveryDay" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPayed" /> @Html.DisplayNameFor(model => model.IsPayed)
+                    <input class="form-check-input" asp-for="Sale.IsPayed" /> @Html.DisplayNameFor(model => model.Sale.IsPayed)
                 </label>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDelivered" /> @Html.DisplayNameFor(model => model.IsDelivered)
+                    <input class="form-check-input" asp-for="Sale.IsDelivered" /> @Html.DisplayNameFor(model => model.Sale.IsDelivered)
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="Comment" class="control-label"></label>
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
+                <label asp-for="Sale.Comment" class="control-label"></label>
+                <input asp-for="Sale.Comment" class="form-control" />
+                <span asp-validation-for="Sale.Comment" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Sale.Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

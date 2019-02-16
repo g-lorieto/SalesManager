@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesManager.Core.Models;
 using SalesManager.Core.Services;
 using SalesManager.DataAccess;
+using SalesManager.Models;
 
 namespace SalesManager.Controllers
 {
@@ -15,7 +16,16 @@ namespace SalesManager.Controllers
     {
         private AbstractService<Sale> _service;
 
-        public SalesController(AbstractService<Sale> service) => _service = service;
+        private AbstractService<Product> _productService;
+
+        private AbstractService<Client> _clientService;
+
+        public SalesController(AbstractService<Sale> service, AbstractService<Product> productService, AbstractService<Client> clientService)
+        {
+            _service = service;
+            _productService = productService;
+            _clientService = clientService;
+        }
 
         // GET: Sales
         public async Task<IActionResult> Index()
@@ -42,9 +52,15 @@ namespace SalesManager.Controllers
         }
 
         // GET: Sales/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var clients = (await _clientService.ListAsync()).Data;
+
+            var products = (await _productService.ListAsync()).Data;
+
+            var saleViewModel = new SaleViewModel(clients, products);
+
+            return View(saleViewModel);
         }
 
         // POST: Sales/Create
@@ -52,8 +68,10 @@ namespace SalesManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Date,DeliveryDay,IsPayed,IsDelivered,Comment,Id")] Sale sale)
+        public async Task<IActionResult> Create(SaleViewModel saleViewModel)
         {
+            var sale = saleViewModel.Sale;
+
             if (_service.ValidateEntity(sale).Data)
             {
                 var result = await _service.AddAsync(sale);
@@ -66,24 +84,33 @@ namespace SalesManager.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(sale);
+            return View(saleViewModel);
         }
 
         // GET: Sales/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var clients = (await _clientService.ListAsync()).Data;
+
+            var products = (await _productService.ListAsync()).Data;
+
+            var saleViewModel = new SaleViewModel(clients, products);
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var result = await _service.GetByIdAsync(id.Value);
-            if (result == null)
+            var sale = await _service.GetByIdAsync(id.Value);
+
+            if (sale == null)
             {
                 return NotFound();
             }
 
-            return View(result.Data);
+            saleViewModel.Sale = sale.Data;
+
+            return View(saleViewModel);
         }
 
         // POST: Sales/Edit/5
@@ -91,8 +118,10 @@ namespace SalesManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Date,DeliveryDay,IsPayed,IsDelivered,Comment,Id")] Sale sale)
+        public async Task<IActionResult> Edit(int id, SaleViewModel saleViewModel)
         {
+            var sale = saleViewModel.Sale;
+
             if (id != sale.Id)
             {
                 return NotFound();
@@ -112,6 +141,7 @@ namespace SalesManager.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     var alreadyExists = await _service.EntityExistsAsync(sale.Id);
+
                     if (!alreadyExists.Data)
                     {
                         return NotFound();
@@ -123,7 +153,7 @@ namespace SalesManager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(sale);
+            return View(saleViewModel);
         }
 
         // GET: Sales/Delete/5
@@ -150,6 +180,7 @@ namespace SalesManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteAsync(id);
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -14,7 +14,7 @@ namespace SalesManager.Core.Validators
 
             RuleFor(sale => sale.Date).NotNull();
 
-            RuleFor(sale => sale.Items).NotNull().NotEmpty();            
+            RuleFor(sale => sale.Items).NotEmpty();            
         }
     }
 }

@@ -71,17 +71,17 @@ namespace SalesManager.Controllers
         public async Task<IActionResult> Create(SaleViewModel saleViewModel)
         {
             var sale = saleViewModel.Sale;
+            sale.ClientId = saleViewModel.ClientId;
 
             if (_service.ValidateEntity(sale).Data)
             {
                 var result = await _service.AddAsync(sale);
 
-                if (!result.IsSuccess)
+                if (result.IsSuccess)
                 {
 
+                    return RedirectToAction(nameof(Index));
                 }
-
-                return RedirectToAction(nameof(Index));
             }
 
             return View(saleViewModel);
@@ -96,19 +96,21 @@ namespace SalesManager.Controllers
 
             var saleViewModel = new SaleViewModel(clients, products);
 
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sale = await _service.GetByIdAsync(id.Value);
+            var sale = (await _service.GetByIdAsync(id.Value)).Data;
 
             if (sale == null)
             {
                 return NotFound();
             }
+            saleViewModel.ClientId = sale.ClientId;
 
-            saleViewModel.Sale = sale.Data;
+            saleViewModel.Sale = sale;
 
             return View(saleViewModel);
         }
@@ -121,6 +123,7 @@ namespace SalesManager.Controllers
         public async Task<IActionResult> Edit(int id, SaleViewModel saleViewModel)
         {
             var sale = saleViewModel.Sale;
+            sale.ClientId = saleViewModel.ClientId;
 
             if (id != sale.Id)
             {
@@ -133,9 +136,9 @@ namespace SalesManager.Controllers
                 {
                     var result = await _service.UpdateAsync(id, sale);
 
-                    if (!result.IsSuccess)
+                    if (result.IsSuccess)
                     {
-
+                        return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (DbUpdateConcurrencyException)
@@ -151,8 +154,8 @@ namespace SalesManager.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(saleViewModel);
         }
 

@@ -19,6 +19,9 @@ namespace SalesManager.DataAccess
                 .HasIndex(p => new { p.Name })
                 .IsUnique(true);
 
+            builder.Entity<Client>()
+                .HasIndex(p => new { p.Name })
+                .IsUnique(true);
         }
 
         public DbSet<Client> Clients { get; set; }

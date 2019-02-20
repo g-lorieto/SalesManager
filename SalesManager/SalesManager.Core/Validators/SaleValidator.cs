@@ -10,7 +10,7 @@ namespace SalesManager.Core.Validators
     {
         public SaleValidator()
         {
-            RuleFor(sale => sale.Client).NotNull();
+            RuleFor(sale => sale.ClientId).NotNull();
 
             RuleFor(sale => sale.Date).NotNull();
 

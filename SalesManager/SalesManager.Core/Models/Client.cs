@@ -11,6 +11,6 @@ namespace SalesManager.Core.Models
         public bool IsCantinero { get; set; }
         public string Comment { get; set; }
 
-        public ICollection<Sale> Sales { get; set; }
+        public IList<Sale> Sales { get; set; }
     }
 }

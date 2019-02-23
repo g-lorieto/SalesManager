@@ -13,7 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <select asp-for="ClientId"
+                <select asp-for="Sale.ClientId"
                         asp-items="@(new SelectList(Model.Clients,"Id","Name"))">
                     <option>Please select one</option>
                 </select>

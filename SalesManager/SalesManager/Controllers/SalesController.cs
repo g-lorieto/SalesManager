@@ -70,8 +70,7 @@ namespace SalesManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SaleViewModel saleViewModel)
         {
-            var sale = saleViewModel.Sale;
-            sale.ClientId = saleViewModel.ClientId;
+            var sale = saleViewModel.Sale;            
 
             if (_service.ValidateEntity(sale).Data)
             {
@@ -107,8 +106,7 @@ namespace SalesManager.Controllers
             if (sale == null)
             {
                 return NotFound();
-            }
-            saleViewModel.ClientId = sale.ClientId;
+            }           
 
             saleViewModel.Sale = sale;
 
@@ -122,8 +120,7 @@ namespace SalesManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SaleViewModel saleViewModel)
         {
-            var sale = saleViewModel.Sale;
-            sale.ClientId = saleViewModel.ClientId;
+            var sale = saleViewModel.Sale;            
 
             if (id != sale.Id)
             {

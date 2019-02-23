@@ -7,19 +7,17 @@ using System.Threading.Tasks;
 namespace SalesManager.Models
 {
     public class SaleViewModel
-    {
+    {        
+        public Sale Sale { get; set; }                
         public List<Client> Clients { get; set; }
         public List<Product> Products { get; set; }
-        public Sale Sale { get; set; }
-        public List<Item> Items { get; set; }
-        public int ClientId { get; set; }
-
+        
+        public SaleViewModel() { }
 
         public SaleViewModel(List<Client> clients, List<Product> products)
         {
             Clients = clients;
-            Products = products;
-            Items = new List<Item>();
+            Products = products;            
         }
     }
 }

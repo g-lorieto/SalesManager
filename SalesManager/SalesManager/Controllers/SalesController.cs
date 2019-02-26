@@ -95,13 +95,12 @@ namespace SalesManager.Controllers
 
             var saleViewModel = new SaleViewModel(clients, products);
 
-
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sale = (await _service.GetByIdAsync(id.Value)).Data;
+            var sale = (await _service.GetByIdAsync(id.Value, s => s.Items)).Data;
 
             if (sale == null)
             {
@@ -131,7 +130,7 @@ namespace SalesManager.Controllers
             {
                 try
                 {
-                    var result = await _service.UpdateAsync(id, sale);
+                    var result = await _service.UpdateAsync(id, sale, s => s.Items);
 
                     if (result.IsSuccess)
                     {

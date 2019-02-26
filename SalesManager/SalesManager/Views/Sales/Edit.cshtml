@@ -43,6 +43,9 @@
                 <input asp-for="Sale.Comment" class="form-control" />
                 <span asp-validation-for="Sale.Comment" class="text-danger"></span>
             </div>
+            @{
+                await Html.RenderPartialAsync("~/Views/Items/Partial/PartialEdit.cshtml", Model);
+            }
             <input type="hidden" asp-for="Sale.Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

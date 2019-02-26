@@ -1,11 +1,15 @@
 ﻿$(document).ready(function () {
 
-    var wrapper = $('.add-items');
+    var wrapper = $('.add-items').last();
 
     $(".btn-add-item").click(function (e) {
         e.preventDefault();
 
-        var clone = $('.add-item:first-child').clone(true);
+        var clone = $('.add-item:first-child').first().clone(true);
+
+        clone = clone.find('input:text').val('').end();
+
+        clone = clone.find('select').val(0).end();
 
         counter = clone.data('counter') + 1;
 

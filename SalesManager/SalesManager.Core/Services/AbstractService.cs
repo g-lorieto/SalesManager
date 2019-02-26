@@ -3,6 +3,7 @@ using SalesManager.Core.Models;
 using SalesManager.Core.Models.Results;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,11 +53,11 @@ namespace SalesManager.Core.Services
             }
         }
 
-        public async Task<Result<T>> GetByIdAsync(int id)
+        public async Task<Result<T>> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
             try
             {
-                return Ok(await _repository.GetByIdAsync<T>(id));
+                return Ok(await _repository.GetByIdAsync<T>(id, includes));
             }
             catch (Exception ex)
             {
@@ -64,11 +65,11 @@ namespace SalesManager.Core.Services
             }
         }
 
-        public async Task<Result<int>> UpdateAsync(int id, T entity)
+        public async Task<Result<int>> UpdateAsync(int id, T entity, params Expression<Func<T, object>>[] navigations)
         {
             try
             {
-                return Ok(await _repository.UpdateAsync(entity));
+                return Ok(await _repository.UpdateAsync(entity, navigations));
             }
             catch (Exception ex)
             {

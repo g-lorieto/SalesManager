@@ -13,6 +13,6 @@ namespace SalesManager.Core.Models
         public string Comment { get; set; }
 
         public Client Client { get; set; }
-        public IList<Item> Items { get; set; }
+        public virtual IList<Item> Items { get; set; }
     }
 }

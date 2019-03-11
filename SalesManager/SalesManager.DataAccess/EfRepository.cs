@@ -66,7 +66,11 @@ namespace SalesManager.DataAccess
 
         public async Task<int> UpdateAsync<T>(T entity, params Expression<Func<T, object>>[] navigations) where T : BaseEntity
         {
-            var dbEntry = _dbContext.Entry(entity);
+            var dbEntity = _dbContext.Set<T>().Find(entity.Id);
+
+            var dbEntry = _dbContext.Entry(dbEntity);
+
+            dbEntry.CurrentValues.SetValues(entity);
 
             dbEntry.State = EntityState.Modified;
 
@@ -74,16 +78,20 @@ namespace SalesManager.DataAccess
             {
                 var propertyName = property.GetPropertyAccess().Name;
 
-                List<BaseEntity> childs = dbEntry.Collection(propertyName).CurrentValue.Cast<BaseEntity>().ToList();
+                await dbEntry.Collection(propertyName).LoadAsync();
 
-                var existingChilds = _dbContext.Find(BasEntity, childs.Select(x => x.Id).ToArray())
+                List<BaseEntity> dbChilds = dbEntry.Collection(propertyName).CurrentValue.Cast<BaseEntity>().ToList();
 
-                foreach (BaseEntity child in childs)
+                foreach (BaseEntity child in dbChilds)
                 {
-                    
                     if (child.Id == 0)
                     {
                         _dbContext.Entry(child).State = EntityState.Added;
+                    }
+
+                    if (deletedEntities.Contains(child.Id))
+                    {
+                        _dbContext.Entry(child).State = EntityState.Deleted;
                     }
                     else
                     {

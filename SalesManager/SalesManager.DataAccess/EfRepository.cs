@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SalesManager.Core.Interfaces;
 using SalesManager.Core.Models;
 using System;
@@ -66,41 +67,48 @@ namespace SalesManager.DataAccess
 
         public async Task<int> UpdateAsync<T>(T entity, params Expression<Func<T, object>>[] navigations) where T : BaseEntity
         {
-            var dbEntity = _dbContext.Set<T>().Find(entity.Id);
-
-            var dbEntry = _dbContext.Entry(dbEntity);
-
-            dbEntry.CurrentValues.SetValues(entity);
-
-            dbEntry.State = EntityState.Modified;
-
-            foreach (var property in navigations)
+            try
             {
-                var propertyName = property.GetPropertyAccess().Name;
+                var dbEntity = await _dbContext.FindAsync<T>(entity.Id);
 
-                await dbEntry.Collection(propertyName).LoadAsync();
+                var dbEntry = _dbContext.Entry(dbEntity);
+                dbEntry.CurrentValues.SetValues(entity);
 
-                List<BaseEntity> dbChilds = dbEntry.Collection(propertyName).CurrentValue.Cast<BaseEntity>().ToList();
-
-                foreach (BaseEntity child in dbChilds)
+                foreach (var property in navigations)
                 {
-                    if (child.Id == 0)
+                    var propertyName = property.GetPropertyAccess().Name;
+                    var dbItemsEntry = dbEntry.Collection(propertyName);
+                    var accessor = dbItemsEntry.Metadata.GetCollectionAccessor();
+
+                    await dbItemsEntry.LoadAsync();
+                    var dbItemsMap = ((IEnumerable<BaseEntity>)dbItemsEntry.CurrentValue)
+                        .ToDictionary(e => e.Id);
+
+                    var items = (IEnumerable<BaseEntity>)accessor.GetOrCreate(entity);
+
+                    foreach (var item in items)
                     {
-                        _dbContext.Entry(child).State = EntityState.Added;
+                        if (!dbItemsMap.TryGetValue(item.Id, out var oldItem))
+                            accessor.Add(dbEntity, item);
+                        else
+                        {
+                            _dbContext.Entry(oldItem).CurrentValues.SetValues(item);
+                            dbItemsMap.Remove(item.Id);
+                        }
                     }
 
-                    if (deletedEntities.Contains(child.Id))
+                    foreach (var oldItem in dbItemsMap.Values)
                     {
-                        _dbContext.Entry(child).State = EntityState.Deleted;
-                    }
-                    else
-                    {
-                        _dbContext.Entry(child).State = EntityState.Modified;
+                        accessor.Remove(dbEntity, oldItem);                        
                     }
                 }
-            }
 
-            return await _dbContext.SaveChangesAsync();
+                return await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

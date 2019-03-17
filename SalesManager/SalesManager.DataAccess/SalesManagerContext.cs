@@ -21,7 +21,8 @@ namespace SalesManager.DataAccess
 
             builder.Entity<Sale>()
                 .HasMany(s => s.Items)
-                .WithOne(i => i.Sale);
+                .WithOne(i => i.Sale)
+                .IsRequired();
 
             builder.Entity<Client>()
                 .HasIndex(p => new { p.Name })

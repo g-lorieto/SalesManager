@@ -27,6 +27,7 @@
                 <span asp-validation-for="Sale.Items[i].Price" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Sale.Items[i].Id" class="resetableHidden" />
+            <input type="hidden" asp-for="Sale.Items[i].SaleId"/>
             <div class="form-group">
                 <button class="btn btn-remove-item" data-toggle="tooltip" title="Remove Item">
                     <span class="glyphicon glyphicon-minus"></span>

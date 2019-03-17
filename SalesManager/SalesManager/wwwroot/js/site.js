@@ -11,6 +11,8 @@
 
         clone = clone.find('select').val(0).end();
 
+        clone = clone.find('.resetableHidden').val(0).end();
+
         counter = clone.data('counter') + 1;
 
         clone.attr('data-counter', counter);
@@ -21,6 +23,8 @@
 
         clone.appendTo(wrapper);
 
+        resetIndexes();
+
         $('.add-item .btn-remove-item').show();
     });
 
@@ -29,11 +33,22 @@
         $(this).parents('.add-item').remove();
 
         removeButton();
+        resetIndexes();
     });
 
     function removeButton() {
         if ($('.add-item').length == 1) {
             $('.add-item .btn-remove-item').hide();
         }
+    }
+
+    function resetIndexes() {
+        var index = 0;
+        $('.add-items').children().each(function () {
+            $(this).find('[name]').attr('name', function (_, name) {
+                return name.replace(/\[\d+\]/, '[' + index + ']');
+            });            
+            index++;
+        });
     }
 });

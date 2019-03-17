@@ -3,6 +3,7 @@ using SalesManager.Core.Models;
 using SalesManager.Core.Models.Results;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +12,9 @@ namespace SalesManager.Core.Services
 {
     public abstract class AbstractService<T> where T : BaseEntity
     {
-        private IRepository _repository;
+        protected IRepository<T> _repository;
 
-        public AbstractService(IRepository repository)
+        public AbstractService(IRepository<T> repository)
         {
             _repository = repository;
         }
@@ -29,11 +30,17 @@ namespace SalesManager.Core.Services
                 return Failure(-1, ex.Message);
             }
         }
+
+        public IQueryable<T> Query()
+        {
+            return _repository.Query();
+        }
+
         public async Task<Result<int>> DeleteAsync(int id)
         {
             try
             {
-                return Ok(await _repository.DeleteAsync<T>(id));
+                return Ok(await _repository.DeleteAsync(id));
             }
             catch (Exception ex)
             {
@@ -45,7 +52,7 @@ namespace SalesManager.Core.Services
         {
             try
             {
-                return Ok(await _repository.ListAsync<T>());
+                return Ok(await _repository.ListAsync());
             }
             catch (Exception ex)
             {
@@ -57,7 +64,7 @@ namespace SalesManager.Core.Services
         {
             try
             {
-                return Ok(await _repository.GetByIdAsync<T>(id, includes));
+                return Ok(await _repository.GetByIdAsync(id, includes));
             }
             catch (Exception ex)
             {
@@ -81,7 +88,7 @@ namespace SalesManager.Core.Services
         {
             try
             { 
-                return Ok(await _repository.EntityExistsAsync<T>(id));
+                return Ok(await _repository.EntityExistsAsync(id));
             }
             catch (Exception ex)
             {

@@ -12,7 +12,7 @@ namespace SalesManager.Core.Services
 {
     public class ProductsService : AbstractService<Product>
     {
-        public ProductsService(IRepository repository) : base(repository) { }
+        public ProductsService(IRepository<Product> repository) : base(repository) { }
 
         public override Result<bool> ValidateEntity(Product entity)
         {

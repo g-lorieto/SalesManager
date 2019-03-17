@@ -10,7 +10,7 @@ namespace SalesManager.Core.Services
 {
     public class ClientsService : AbstractService<Client>
     {
-        public ClientsService(IRepository repository) : base(repository) { }
+        public ClientsService(IRepository<Client> repository) : base(repository) { }
 
         public override Result<bool> ValidateEntity(Client entity)
         {

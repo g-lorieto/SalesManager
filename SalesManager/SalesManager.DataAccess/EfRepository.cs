@@ -12,20 +12,22 @@ using System.Threading.Tasks;
 
 namespace SalesManager.DataAccess
 {
-    public class EfRepository : IRepository
+    public class EfRepository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly SalesManagerContext _dbContext;
+        private DbSet<T> _dbSet;
 
         public EfRepository(SalesManagerContext dbContext)
         {
             _dbContext = dbContext;
+            _dbSet = dbContext.Set<T>();
         }
 
-        public async Task<int> AddAsync<T>(T entity) where T : BaseEntity
+        public async Task<int> AddAsync(T entity)
         {
             try
             {
-                _dbContext.Set<T>().Add(entity);
+                _dbSet.Add(entity);
                 return await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -35,21 +37,26 @@ namespace SalesManager.DataAccess
             }
         }
 
-        public async Task<int> DeleteAsync<T>(int id) where T : BaseEntity
+        public async Task<int> DeleteAsync(int id)
         {
-            var entity = await _dbContext.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
-            _dbContext.Set<T>().Remove(entity);
+            var entity = await _dbSet.SingleOrDefaultAsync(e => e.Id == id);
+            _dbSet.Remove(entity);
             return await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> EntityExistsAsync<T>(int id) where T : BaseEntity
+        public async Task<bool> EntityExistsAsync(int id)
         {
-            return await _dbContext.Set<T>().AnyAsync(e => e.Id == id);
+            return await _dbSet.AnyAsync(e => e.Id == id);
         }
 
-        public async Task<T> GetByIdAsync<T>(int id, params Expression<Func<T, object>>[] includes) where T : BaseEntity
+        public IQueryable<T> Query()
         {
-            var query = _dbContext.Set<T>().AsQueryable();
+            return _dbSet.AsQueryable();
+        }
+
+        public async Task<T> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
 
             if (includes != null)
             {
@@ -60,12 +67,12 @@ namespace SalesManager.DataAccess
             return await query.SingleOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task<List<T>> ListAsync<T>() where T : BaseEntity
+        public async Task<List<T>> ListAsync()
         {
-            return await _dbContext.Set<T>().ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
-        public async Task<int> UpdateAsync<T>(T entity, params Expression<Func<T, object>>[] navigations) where T : BaseEntity
+        public async Task<int> UpdateAsync(T entity, params Expression<Func<T, object>>[] navigations)
         {
             try
             {
